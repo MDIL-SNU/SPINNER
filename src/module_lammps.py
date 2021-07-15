@@ -185,7 +185,7 @@ def calculate_rdf(atomnamelist, rdf_grid,lmp,number):
         sentence +=  atom + " "
     lmp.command(sentence)
     lmp.command("neighbor 2 bin")
-    lmp.command("neigh_modify 	every 1 delay 0 check yes")
+    lmp.command("neigh_modify 	every 1 delay 0 check yes one 50000 page 500000")
     lmp.command("compute 	_rg all gyration ")               # All atoms will be involved in the simulation http://lammps.sandia.gov/doc/compute.html 
     lmp.command("variable g equal cella")
     lmp.command("variable h equal cellb")
