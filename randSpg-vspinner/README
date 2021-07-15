@@ -1,0 +1,295 @@
+***************************
+******    RandSpg    ******
+***************************
+
+What is RandSpg?
+
+RandSpg is a program that generates random crystals with specific space groups.
+The user inputs a specific composition and space group to be generated. The
+algorithm then proceeds by finding all combinations of Wyckoff positions that
+satisfy the composition. It then randomly selects a combination of Wyckoff
+positions for the space group, generates random coordinates for variables
+in the Wyckoff positions, and places atoms in those sites. It ensures that any
+constraints the user placed on the system (lattice constraints including
+min/max volume, minimum interatomic distances, specific Wyckoff positions for
+specific atoms, etc.) are satisfied.
+
+The Problem:
+Trial structure models are required for: (i) determining the crystal
+structure of a compound given its powder X-ray diffraction data using the
+direct space method, (ii) creating the first set of individuals using a priori
+crystal structure prediction. For both of these problems the initial guess can
+greatly influence the success rate of the algorithm used for structure
+determination, especially for crystals with large unit cells. The unit cells of
+over 99% of inorganic crystals possess some element of symmetry, and it
+may be possible to obtain partial information about their crystal structures
+experimentally. Therefore, an algorithm that is able to create trial structures
+with user-defined constraints including the crystal’s composition, space group
+and unit cell parameters is desired.
+
+The Solution:
+The RandSpg algorithm is able to determine every possible combination
+of Wyckoff positions for a given space group and composition. The algorithm
+randomly picks one of these combinations and adds atoms to particular Wyckoff
+sites wherein the Cartesian coordinates are chosen randomly such that they
+satisfy user-defined minimum interatomic distance constraints. In addition,
+the program can optionally generate crystals where user-defined atoms are
+placed at specific Wyckoff sites.
+
+
+**********************************
+**** Compilation Instructions ****
+**********************************
+
+*****************************************
+**** Unix (Linux \ OS X) Compilation ****
+*****************************************
+
+In order to compile, one simply needs cmake and a c++11 compiler.
+
+For ubuntu, you may install cmake by entering "sudo apt-get install cmake"
+
+Compilation instructions:
+
+Enter the following into a terminal from the root randSpg directory
+
+  mkdir build
+  cd build
+  cmake ..
+  make -j3
+
+The program should be compiled! This has been tested with GCC on Linux and OS X.
+
+See "Running the Program" section below.
+
+
+**********************************
+**** Windows MSVC Compilation ****
+**********************************
+
+In order to compile with VC on Windows, one needs cmake and MSVC 2013 or greater
+(other Windows compilers may work as well, but the CMakeLists.txt or
+code may need to be adjusted a little bit). It has been tested on VC 2013 and
+VC 2015.
+
+You will then need to open an MSVC command prompt (see
+http://stackoverflow.com/questions/21476588/where-is-developer-command-prompt-for-vs2013
+for an example of how to do this). The MSVC command prompt has all of the
+environments set up like we need them to be.
+
+From the MSVC command prompt, find the randSpg root directory, and then
+type the following commands in the prompt:
+
+  mkdir build
+  cd build
+  cmake .. -G "NMake Makefiles"
+  nmake
+
+If all goes well, your randSpg.exe file should now be present in the directory!
+
+See "Running the Program" section below.
+
+
+***********************************
+**** Windows MinGW Compilation ****
+***********************************
+
+WARNING: a slightly different random number generator is used for MinGW. This
+shouldn't affect things too much, however...
+
+You need to have cmake and the MinGW bin directory in your path for this to
+work.
+
+From a command prompt, find the randSpg root directory, and then
+type the following commands in the prompt:
+
+  mkdir build
+  cd build
+  cmake .. -G "MinGW Makefiles"
+  mingw32-make
+
+Or whatever your command is for "make" with mingw.
+If all goes well, your randSpg.exe file should now be present in the directory!
+
+See "Running the Program" section below.
+
+
+*****************************
+**** Running the Program ****
+*****************************
+
+To run the program, use the executable that is created in the build directory
+as follows:
+  ./randSpg <inputFileName>
+
+A sample input file with instructions is included in the 'sample'
+directory: randSpg.in. You may copy it to the build directory and then run
+
+  ./randSpg randSpg.in
+
+A sample log file and a sample output file are included in the sample
+directory. Please note that the sample, randSpg.in, creates more than one
+output file (only one is in the sample directory), and it places them in an
+output directory.
+
+For the sample input file, the results are stored in an output directory
+called "randSpgOut" (may be changed in the input file), and log information
+is stored in "randSpg.log". In the output directory, the output files are
+named as <composition>_<spg>-<index>. Using the default verbosity, if you
+open the log file, you can see how the options were interpreted, and you can
+see which atomic numbers were assigned to which Wyckoff positions (on both
+failures and successes). The end of the log file shows the number of structures
+attempted, the number of structures that succeeded in being generated,
+and timings for different parts of the program.
+
+The results are stored as VASP POSCAR files. If you wish to convert them to
+another file format, you may want to look into OpenBabel.
+
+
+*********************************************************************
+**** Instructions for Calling RandSpg Functions in your own Code ****
+*********************************************************************
+
+These instructions are for programmers interested in incorporating
+RandSpg into their own code.
+
+To generate a crystal with the desired space group,
+one simply has to create an input struct and call
+RandSpg::randSpgCrystal with it. The input struct has
+four parameters in its constructor and are as follows:
+
+randSpgInput(uint spg, const std::vector<uint>& atoms,
+             const latticeStruct& lmins,
+             const latticeStruct& lmaxes);
+
+where spg is the space group to be generated, atoms is a vector
+of atomic numbers (one for each atom), and lmins and lmaxes are the
+mins and maxes, respectively, of the crystal lattice to be generated.
+
+A latticeStruct constructor is as follows:
+
+latticeStruct(double a, double b, double c,
+              double alpha, double beta, double gamma);
+
+where a, b, and c are the lengths of the lattice vectors in Angstroms and
+alpha, beta, and gamma are the angles (in degrees) of the lattice. One
+latticeStruct needs to be made for the minimum values, and one needs to be
+made for the maximum values for the randSpg input.
+
+
+The input struct contains data members
+that are defined as follows:
+
+struct randSpgInput {
+  // The space group to be generated. Set in constructor.
+  uint spg;
+
+  // The vector of atomic numbers. Set in constructor.
+  std::vector<uint> atoms;
+
+  // The min values for the lattice. Set in constructor.
+  latticeStruct latticeMins;
+
+  // The max values for the lattice. Set in constructor.
+  latticeStruct latticeMaxes;
+
+  // Scaling factor for interatomic distances. For example, "0.5" would imply
+  // that all atomic radii are 0.5 of their original value. Default is 1.0.
+  double IADScalingFactor;
+
+  // Minimum radius for atomic radii in Angstroms. All atomic radii below this
+  // radius will be set to this value. Default is 0.0
+  double minRadius;
+
+  // A vector of pairs. Each pair is an atomic number followed by a radius in
+  // Angstroms. You may append to this vector to set your own radii. The
+  // default is that it is empty.
+  std::vector<std::pair<uint, double>> manualAtomicRadii;
+
+  // Minimum volume for the final crystal in Angstroms cubed. Default is
+  // -1 (No min volume).
+  double minVolume;
+
+  // Maximum volume for the final crystal in Angstroms cubed. Default is
+  // -1 (No max volume).
+  double maxVolume;
+
+  // A vector of pairs. Each pair is an atomic number followed by a char
+  // representing a Wyckoff letter. This essentially "forces" the program
+  // to use the specified atomic number for the Wyckoff position defined by the
+  // Wyckoff letter. If you wish to have an atom type in a Wyckoff position
+  // multiple times, just add to this vector multiple items of it.
+  std::vector<std::pair<uint, char>> forcedWyckAssignments;
+
+  // Verbosity for log file printing. 'v' for verbose (prints all possibilities
+  // found), 'r' for regular (prints Wyckoff assignments), or 'n' for none
+  // (prints nothing other than what the options were set to). Default is 'n'
+  char verbosity;
+
+  // Max number of attempts to satisfy the minIAD requirements when placing
+  // atoms in the Wyckoff positions. If it fails this many times, it will abort
+  // the operation. Default is 100.
+  int maxAttempts;
+
+  // This forces the program to use the most general Wyckoff position at
+  // least once. This ensures that the crystal will be of the correct space
+  // group. If this is not set to true, then more compositions are possible for
+  // some space groups, but the final space group will not be guaranteed to be
+  // the correct space group. Default is true.
+  bool forceMostGeneralWyckPos;
+}
+
+After leaving these options as their default values or setting them,
+you may call RandSpg::randSpgCrystal(randSpgInput input) by using the
+input as the parameter. A crystal object is returned. Basic
+functions for a Crystal object are:
+
+// Returns a latticeStruct with the lattice parameters set.
+// Lattice structs are defined above.
+getLattice();
+
+// Returns a vector<atomStruct>. atomStructs are simple structs that
+// contain members unsigned int "atomicNum" for the atomic number and
+// doubles for "x", "y", and "z" in fractional coordinates.
+getAtoms();
+
+// Writes a POSCAR file from the data contained in the crystal to the path give
+// to it by "filename." The "title" parameter is the title located in the first
+// line of the POSCAR.
+writePOSCAR(const string& filename, const string& title);
+
+More info is given in the header files of these classes.
+
+A static library ("libRandSpgLib.a") is generated by default from the
+CMakeLists.txt settings. You'll then just need to link to this library.
+
+
+************************
+**** Files Included ****
+************************
+
+*** Generic files ***
+cgi/*                  : Files for the website and CGI interface
+CMakeLists.txt         : Build system config
+COPYING                : Licensing information
+sample/*              : Sample input file, log file, and output file
+tests/*                : Various tests and results for accuracy and performance
+
+*** Files in src/ or include/ ***
+crystal.*              : Crystal class for storing and modifying crystals
+elemInfoDatabase.h     : Database containing symbols, radii, etc. for atoms
+elemInfo.*             : Static class for handling info in elemInfoDatabase.h
+fileSystemUtils.h      : Utilities for handling directories and files
+fillCellDatabase.h     : Database containing complete coordinates for the most
+                         general Wyckoff position of each space group
+functionTracker.h      : Utility for debugging by tracking function calls
+main.cpp               : Used to link to RandSpgLib and build the executable
+randSpgCombinatorics.* : Class for solving the combinatorics problems
+randSpg.*              : Class containing the primary functions of the algorithm
+randSpgOptions.*       : Class for reading the input file
+rng.h                  : Functions for generating random numbers in a range
+utilityFunctions.h     : Various generic utility functions
+wyckoffDatabase.h      : Database containing basic Wyckoff position information
+                         for each space group
+wyckPosTrackingInfo.h  : Used by combinatorics functions to keep track of
+                         the Wyckoff positions that have been used

@@ -1,0 +1,88 @@
+################ continue or not?: not continue if not written ###########
+continue:
+        continue_num:                   0
+        original_dir:   directory_that_you_want_to_continue
+
+################# required #################
+
+input_dir:  li2ti1n2
+output_dir: li2ti1n2_out
+
+initial_volume: 210.0
+
+structure:
+        i_population:    40
+        population:      40
+        num_of_best:      0
+        generation:     500
+        re-relax_best:  yes  #### change: re-relax best is more efficient when removing duplicated structures
+
+material:
+        Li: 8
+        Ti: 4
+        N:  8
+
+
+############# Additional setting (not requied): default values when they are not written ##########
+            # recommend to carefully look into them
+operator:
+        random:              0.7
+        crossover:           0.0
+        con_permutation:     0.0
+        all_permutation:     0.2
+        latticemutation:     0.1
+
+distance_constraint:
+        Li-Li: 1.52
+        Li-Ti: 1.92
+        Li-N:  1.28
+        Ti-Ti: 2.24
+        Ti-N:  1.36
+        N-N:   1.12
+
+energy_criteria:
+        energy_cut_for_inheriting_structures:  0.10 
+        energy_cut_for_best_structures:        0.05 
+        energy_cut_for_further_relax:           0.5 
+
+similarity_metric:
+        type:             pRDF
+        limit:            0.08 
+        volume_cut:        0.1  
+        energy_cut:      0.005  
+        gaussian_dist:     0.1 
+        rdf_grid:          250 
+
+################### Not very important setting ########################
+crossover_condition:
+        num_of_grid_for_cut:                     10
+        energy_range_for_cut_select:          0.010
+        grid_for_shift:                           3
+        iteration_for_add_atoms:                 50
+
+random_condition:
+        force_general_Wyckoff_site:                          no
+        maximum_attempts_for_one_space_group_and_volume:    100
+        scale_factor:                                       1.0
+        sublattice_generation:                              0.0
+        max_sub_lattice:                                      2
+
+permutation_allow:
+        group1: [Li,Ti]
+        
+relax_condition:
+        relax_iteration:                              5 
+        method_of_first_relax:                       cg 
+        further_calculate_with_accurate_potential:   no 
+
+antiseed:
+        activate_antiseed:   no
+        gaussian_width:     0.2
+        selection_gaussian: 0.1
+        selection_fraction: 0.5
+
+vacuum_constraint:
+        apply_vacuum_constraint:                 no 
+        maximum_vacuum_length:                 10.0 
+        grid:                                   1.0 
+

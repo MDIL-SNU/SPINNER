@@ -1,0 +1,81 @@
+input_dir: test_inp
+output_dir: final_out1000
+continue:
+        continue_num:          0
+        original_dir:  test_out100
+operator:
+        Auto_Frac:             0
+        random:              0.7
+        crossover:           0.0  # NOT YET
+        con_permutation:     0.0
+        all_permutation:     0.2
+        latticemutation:     0.1
+        softmutation:        0.0
+
+structure:
+        i_population:       56
+        population:         56  
+        num_of_best:         0
+        generation: 1000
+        re-relax_best:       1
+
+antiseed:
+        activate_antiseed:   yes 
+        gaussian_width:     0.2
+        selection_gaussian: 0.1
+        selection_fraction: 0.25
+
+energy_criteria:
+        energy_cut_for_inheriting_structures:  0.10
+        energy_cut_for_best_structures:        0.05
+        energy_cut_for_further_relax:           0.5
+material:
+        Mg: 8
+        Si: 4
+        O: 16
+
+crossover_condition:
+        num_of_grid_for_cut:                     10
+        energy_range_for_cut_select:          0.020
+        grid_for_shift:                           3
+        iteration_for_add_atoms:                 50
+
+random_condition:
+        initial_volume:                        350
+        force_general_Wyckoff_site:              no
+        maximum_attemps_for_one_space_group:    2000
+        scale_factor:                           1.0
+        sublattice_generation:                  0.0
+        max_sub_lattice:                          2
+        spring_method:                           no
+
+relax_condition:
+        relax_iteration:                          10 # unit: times (relaxation number = relax_iteration * total number of atom)
+        method_of_first_relax:                   mix # cg/fire/mix: method of second relax (lattice unfixed) is fixed to cg method 
+        further_relax_with_accurate_potential:   no # you have to have potential_accurate in the input u
+distance_restrains:
+        Mg-Mg: 1.95
+        Mg-Si: 1.9
+        Mg-O: 1.25
+        Si-Si: 2.08
+        Si-O: 1.02
+        O-O: 1.76
+
+vacuum_constraint:
+        check_long_range_constraint:            yes 
+        maximum_vacuum_length:                 10.0 
+        inspection_grid:                        1.0 
+
+permutation_allow:
+        group1: [Au,CCa]
+
+similarity_metric:
+        type:             pRDF
+        limit:             0.1  # 0.008
+        volume_cut:        1.0  # 1.0
+        energy_cut:      0.005  # 0.003
+        gaussian_dist:     1.0
+        rdf_grid:          250 
+
+meta_dynamics:
+        max_iter:       30000
