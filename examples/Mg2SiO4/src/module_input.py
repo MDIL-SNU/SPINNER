@@ -174,7 +174,7 @@ def default_inputs(inp_yaml):
         inp_yaml['similarity_metric']['type'] = 'pRDF'
 
     if 'limit' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['limit'] = min(0.08*40/float(tot_num_atom))
+        inp_yaml['similarity_metric']['limit'] = min(0.08*40/float(tot_num_atom),0.1)
 
     if 'volume_cut' not in inp_yaml['similarity_metric']:
         inp_yaml['similarity_metric']['volume_cut'] = 0.1
