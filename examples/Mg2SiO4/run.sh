@@ -9,7 +9,7 @@ cat $PBS_NODEFILE > nodefile
 NPROC=`wc -l < $PBS_NODEFILE`
 
 cd src
-mpirun -np $NPROC python3 main.py mg2si1o4.yaml >& stdout.x
+mpirun -np $NPROC python3 main.py mg2si1o4.yaml >& ../stdout.x
 
 # if you don't want to print output (mostly useless)
 # run such as 
