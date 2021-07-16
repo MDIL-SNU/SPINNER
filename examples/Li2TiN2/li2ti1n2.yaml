@@ -67,7 +67,7 @@ random_condition:
         sublattice_generation:                              0.0
         max_sub_lattice:                                      2
 
-permutation_allow:
+permutation_allow:    # need only when c_permutation is on. not used for a_permutation
         group1: [Li,Ti]
         
 relax_condition:
