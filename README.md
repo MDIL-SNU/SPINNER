@@ -63,7 +63,7 @@ to bind randSpg with python, do follows
 ```
 
 ### Install LAMMPS
-This is the most tricky part of the installation steps. You can install python-lammps by follows but it may not work depending your system. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detail discussion.
+This is the most tricky part of the installation steps. You can install python-lammps by follows but it may not work depending on your system. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detailed discussion.
 
 ```
 
@@ -112,4 +112,9 @@ src directory should be in the running directory. You can copy and paste the src
 ```
 
 ## Example
-See examples.
+See examples directory.
+
+```
+
+  sh run.sh
+```
