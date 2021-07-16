@@ -3,7 +3,7 @@ SPINNER(Structure Prediction of Inorganic crystals using Neural Network potentia
 
 If you use SPINNER, please cite this paper: S. Kang et al. Accelerated identification of equilibrium structures of multicomponent inorganic crystals using machine learning potentials (arXiv:2107.02594).
 
-Here we describe minimal instruction to run the example of SPINNER.
+Here we describe minimal instructions for running SPINNER.
 If you want more information such as tuning parameters, please visit our online manual(https://spinner-csp.readthedocs.io)
 
 ## Installation
@@ -35,10 +35,10 @@ or directly downloading the source codes from the webpages.
 SPINNER supports CMAKE 3.20 or higher version and gcc version 7.3.1 or higer version.
 
 ### Python binding of randSpg and LAMMPS (important)
-SPINNER utilizes python binding of randSpg and LAMMPS code. However, those codes are slightly modified to be incorporated with SPINNER, so you need to comiple with source codes provided with SPINNER, not with the original ones.
+SPINNER utilizes python binding of randSpg and LAMMPS code. However, those codes are slightly modified to be incorporated with SPINNER, so you need to comiple with source codes provided in this page, not with the original ones.
 
 ### Install randSpg
-To install randSpg, do follows
+To install randSpg, do
 
 ```
   cd /SPINNER-directory/randSpg-vspinner/
@@ -48,7 +48,7 @@ To install randSpg, do follows
   make -j3
 ```
 
-to bind randSpg with python, do follows
+to bind randSpg with python, do 
 
 ```
   cd /SPINNER-directory/randSpg-vspinner/python
@@ -70,7 +70,7 @@ This is the most tricky part of the installation steps. You can install python-l
   make install-python
 ```
 
-Here, XXX is the name of the make file (Makefile.XXX in src/MAKE directory). Note that LAMMPS have to be installed with serial version (not mpi version). The optimization is recommended for your system but default serial option is also possible.
+Here, XXX is the name of the make file (Makefile.XXX in src/MAKE directory). Note that LAMMPS have to be installed with serial version (not mpi version). The optimization is recommended for your system but default serial option is likely to be sufficient.
 
 ## Usage
 To use SPINNER, 1 file (XXX.yaml) and 2 directories (input directory and src) are required.
