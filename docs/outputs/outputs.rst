@@ -5,10 +5,10 @@
 4.1 Energy and volume data
 ==========================
 
- - :code:`totalGen`: information such as energy, volume, and generation methods of total population.
- - :code:`totalbest`: information such as energy, volume, and generation methods of the best structure in each generation.
- - :code:`BestResults`: information of best results that are survived in the current generation (updated at each generation)
- - :code:`best_history`: history of BestResults file
+ - :code:`totalGen` contains information such as energy, volume, and generation methods of total population.
+ - :code:`totalbest` contains information such as energy, volume, and generation methods of the best structure in each generation.
+ - :code:`BestResults` contains information of best results that are survived in the current generation (updated at each generation)
+ - :code:`best_history` contains history of BestResults file
 
  Energy 10000.0 eV in these files means that the structure violates the geometrical constraints or have the same structure as the other structure in the pool.
 
