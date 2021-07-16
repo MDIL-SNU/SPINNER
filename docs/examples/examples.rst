@@ -3,7 +3,7 @@
 ===========
 
 SPINNER includes example files in the directory :code:`examples`.
-You can run the examples by follows:
+You can run the examples as follows:
 
 ::
 
