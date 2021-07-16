@@ -25,7 +25,6 @@ SPINNER supports Python :code:`3.6` or higher version. SPINNER utilizes Python m
 You can download these modules by
 
 ```
-
   pip3 install mpi4py PyYAML numpy pybind11
 ```
 
@@ -42,7 +41,6 @@ SPINNER utilizes python binding of randSpg and LAMMPS code. However, those codes
 To install randSpg, do follows
 
 ```
-
   cd /SPINNER-directory/randSpg-vspinner/
   mkdir build
   cd build
@@ -53,7 +51,6 @@ To install randSpg, do follows
 to bind randSpg with python, do follows
 
 ```
-
   cd /SPINNER-directory/randSpg-vspinner/python
   mkdir build
   cd build
@@ -66,7 +63,6 @@ to bind randSpg with python, do follows
 This is the most tricky part of the installation steps. You can install python-lammps by follows but it may not work depending on your system. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detailed discussion.
 
 ```
-
   cd /SPINNER-directory/lammps-vspinner
   cd src
   make yes-python
@@ -106,7 +102,6 @@ src directory should be in the running directory. You can copy and paste the src
 ## Running code
 
 ```
-
   cd src
   mpirun -np core_number python3 main.py XXX.yaml
 ```
@@ -115,6 +110,5 @@ src directory should be in the running directory. You can copy and paste the src
 See examples directory.
 
 ```
-
   sh run.sh
 ```
