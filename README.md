@@ -1,7 +1,7 @@
 # SPINNER
 SPINNER(Structure Prediction of Inorganic crystals using Neural Network potentials with Evolutionary and Random searches)
 
-If you use SPINNER, please cite this article: 
+If you use SPINNER, please cite this article: S. Kang et al. Accelerated identification of equilibrium structures of multicomponent inorganic crystals using machine learning potentials, arXiv:2107.02594.
 
 Here do we describe minimal instruction to run the example of SPINNER
 If you want more information such as tuning parameters, please visit our online manual(https://spinner-csp.readthedocs.io)
