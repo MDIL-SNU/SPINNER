@@ -15,7 +15,7 @@ git clone https://github.com/MDIL-SNU/SPINNER.git
 
 ### Python requirements
 
-SPINNER supports Python :code:`3.6` or higher version. SPINNER utilizes Python modules in the following:
+SPINNER supports Python `3.6` or higher version. SPINNER utilizes Python modules in the following:
 
   - mpi4py (https://bitbucket.org/mpi4py/mpi4py/)
   - PyYAML (https://pypi.org/project/PyYAML/)
