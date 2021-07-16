@@ -58,7 +58,7 @@ to bind randSpg with python, do follows
  
 1.4.2 Install LAMMPS
 --------------------
-This is the most tricky part of the installation steps. You can install python-lammps by follows but it may not work depending on your system. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detailed discussion.
+This is the most tricky part of the installation steps. You can install python-lammps by following steps below but it may not work depending on your environment. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detailed discussion.
 
 ::
 
