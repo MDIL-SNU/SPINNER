@@ -1,6 +1,6 @@
 ################ continue or not?: not continue if not written ###########
 continue:
-        continue_num:                   0
+        continue_num:                   0     # 0: new calculation
         original_dir:   directory_that_you_want_to_continue
 
 ################# required #################
