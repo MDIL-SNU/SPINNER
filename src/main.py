@@ -279,7 +279,6 @@ for gen in range(startnum,generation+1):
         Send = [gen, 0, 0, random_num, 0, 0, Vmin, 0, 0, 0, 0, 0]
         comm.send(Send, dest=corenum-1, tag=1)
         random_structure_done = 0
-        if gen == startnum:  
 
         pop = 1
         process = 1
