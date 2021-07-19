@@ -258,16 +258,13 @@ for gen in range(startnum,generation+1):
         Vmin, pop_info,random_num= get_pop_info(inp_file, gen, pop_num, oldresults, src_path, Emin, num_of_best, output_path, ANTISEED)    # pop_info: heredity, permutation, ancestor
 
 
-        # random structure generation in the last core
-        Send = [gen, 0, 0, random_num, 0, 0, Vmin, 0, 0, 0, 0, 0]
-        comm.send(Send, dest=corenum-1, tag=1)
-        random_structure_done = 0
-        if gen == startnum: 
-            T_struct_random1 = 0.0
+
+
 
         #main loop
 
-        if gen == startnum:
+        if gen == startnum:  
+          T_struct_random1 = 0.0
           initial_randoms = {}
           tr1 = time.time()
           for pop in range(1,pop_num+1):
@@ -278,7 +275,11 @@ for gen in range(startnum,generation+1):
               initial_randoms[pop] = [coortemp,latttemp]
               tr2 = time.time()
               T_struct_random1 += tr2-tr1
- 
+            
+         # random structure generation in the last core
+        Send = [gen, 0, 0, random_num, 0, 0, Vmin, 0, 0, 0, 0, 0]
+        comm.send(Send, dest=corenum-1, tag=1)
+        random_structure_done = 0
 
         pop = 1
         process = 1
