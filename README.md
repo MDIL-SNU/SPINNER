@@ -35,7 +35,7 @@ or directly downloading the source codes from the webpages.
 SPINNER supports CMAKE 3.20 or higher version and gcc version 7.3.1 or higer version.
 
 ### Python binding of randSpg and LAMMPS (important)
-SPINNER utilizes python binding of randSpg and LAMMPS code. However, those codes are slightly modified to be incorporated with SPINNER, so you need to comiple with source codes provided in this page, not with the original ones.
+SPINNER utilizes python binding of randSpg (https://github.com/xtalopt/randSpg) and LAMMPS code (https://www.lammps.org). However, those codes are slightly modified to be incorporated with SPINNER, so you need to comiple with source codes provided in this page, not with the original ones.
 
 ### Install randSpg
 To install randSpg, do
