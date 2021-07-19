@@ -63,9 +63,7 @@ to bind randSpg with python, do
 This is the most tricky part of the installation steps. You can install python-lammps by following steps below but it may not work depending on your environment. Please look into LAMMPS forum (https://www.lammps.org/forum.html) or LAMMPS manual Ch. 2 (https://docs.lammps.org/Python_run.html) for detailed discussion.
 
 ```
-  cd /SPINNER-directory
-  tar -xvf lammps-vspinner.tar
-  cd lammps-vspinner
+  cd /SPINNER-directory/lammps-vspinner
   cd src
   make yes-python
   make XXX mode=shlib
