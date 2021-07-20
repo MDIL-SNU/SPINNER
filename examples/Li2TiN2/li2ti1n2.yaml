@@ -48,7 +48,7 @@ energy_criteria:
 similarity_metric:
         type:             pRDF
         limit:            0.10 
-        volume_cut:        0.1  
+        volume_cut:        1.0  
         energy_cut:      0.005  
         gaussian_dist:     0.3 
         rdf_grid:          250 
