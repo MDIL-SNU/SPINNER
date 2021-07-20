@@ -50,7 +50,7 @@ def check_if_there_is_missing_input(inp_yaml):
 
 def default_inputs(inp_yaml):
     
-    tot_atom_num = input_yaml['tot_atom_num']
+    tot_atom_num = inp_yaml['tot_atom_num']
     
     # operator
     if 'operator' not in inp_yaml:
