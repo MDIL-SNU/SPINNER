@@ -63,9 +63,20 @@ output_path = src_path+'/../'+output_dir
 rdf_grid = inp_file['similarity_metric']['rdf_grid']
 
 # check if the same-name directory is in the current folder
-if os.path.isdir(output_path):
+
+if rank == 0:
+  if os.path.isdir(output_path):
     with open("../ERROR_"+input_file,"w") as fw:
         fw.write("output_dir already exists in the current folder. rename it")
+    for i in range(1,corenum):
+        comm.send(0, dest = i, tag = 0)
+    sys.exit()
+  else:
+    for i in range(1,corenum):
+        comm.send(1, dest = i, tag = 0)
+else:
+  if_there_is_same_directory = comm.recv(source = 0, tag=0)
+  if if_there_is_same_directory == 0:
     sys.exit()
 
 #main core
