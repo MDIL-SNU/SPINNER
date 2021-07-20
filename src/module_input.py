@@ -185,7 +185,7 @@ def default_inputs(inp_yaml):
         inp_yaml['similarity_metric']['energy_cut'] = 0.005
 
     if 'gaussian_dist' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['gaussian_dist'] = 0.1
+        inp_yaml['similarity_metric']['gaussian_dist'] = 0.3
 
     if 'rdf_grid' not in inp_yaml['similarity_metric']:
         inp_yaml['similarity_metric']['rdf_grid'] = 250
