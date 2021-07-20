@@ -176,7 +176,7 @@ def default_inputs(inp_yaml):
         inp_yaml['similarity_metric']['type'] = 'pRDF'
 
     if 'limit' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['limit'] = min(0.08*40/float(tot_atom_num),0.2)
+        inp_yaml['similarity_metric']['limit'] = min(4.0/float(tot_atom_num),0.2)
 
     if 'volume_cut' not in inp_yaml['similarity_metric']:
         inp_yaml['similarity_metric']['volume_cut'] = 0.1
@@ -185,7 +185,7 @@ def default_inputs(inp_yaml):
         inp_yaml['similarity_metric']['energy_cut'] = 0.005
 
     if 'gaussian_dist' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['gaussian_dist'] = 0.1
+        inp_yaml['similarity_metric']['gaussian_dist'] = 0.3
 
     if 'rdf_grid' not in inp_yaml['similarity_metric']:
         inp_yaml['similarity_metric']['rdf_grid'] = 250
