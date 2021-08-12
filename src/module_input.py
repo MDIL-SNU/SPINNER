@@ -153,7 +153,7 @@ def default_inputs(inp_yaml):
         for atom2 in inp_yaml['material']:
 
             if (atom1+'-'+atom2 not in inp_yaml['distance_constraint']) and (atom2+'-'+atom1 not in inp_yaml['distance_constraint']):
-                inp_yaml['material'][atom1+'-'+atom2] = 0.7
+                inp_yaml['distance_constraint'][atom1+'-'+atom2] = 0.7
 
     # vacuum constraint
     if 'vacuum_constraint' not in inp_yaml:
