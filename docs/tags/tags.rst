@@ -26,7 +26,7 @@
       re-relax_best: yes
       population_max: 10000
 
-:code:`generation` is the number of generations (required). :code:`population` is the number of the structure in the pool (except for survival) in one generation. :code:`i_population` is the population number in generation 1. Default values are the twice the number of atoms in the simulation cell. :code:`num_of_best` is the number of structure that survive into the next generation. If it is set to 0, then the calculation does not fix the number, but decide it in every generation by the energy window (see :code:`energy_criteria` in Ch.3.8 below). :code:`re-relax_best` decides whether survived structures are relaxed again in each generation or not.
+:code:`generation` is the number of generations (required). :code:`population` is the number of the structure in the pool (except for survival) in one generation. :code:`i_population` is the population number in generation 1. Default values are the twice the number of atoms in the simulation cell. :code:`num_of_best` is the number of structure that survive into the next generation. If it is set to 0, then the calculation does not fix the number, but decide it in every generation by the energy window (see :code:`energy_criteria` in Ch.3.8 below). :code:`re-relax_best` decides whether survived structures are relaxed again in each generation or not. :code:`population_max` is the maximum number of population. If the population number exceeds this value, then the calculation stops.
 
 
 3.3 Defining material system (required)
