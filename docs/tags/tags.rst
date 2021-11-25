@@ -148,12 +148,13 @@ In conditional permutation, only permutation within designated groups are allowe
 
   similarity_metric:
       type:           pRDF
-      limit:          0.08
-      volume_cut:      0.1
-      energy_cut:    0.005
+      limit:          0.01
+      volume_cut:     1000.0
+      energy_cut:     1000.0
       gaussian_dist:   0.1
+      rdf_grid:        250
 
-This is the similarity metric that is used to measure the similarity distance between different structures. For :code:`type` of the similarity metric, :code:`pRDF` is only available for now (see J. Chem. Phys. 130, 104504 (2009) for details). :code:`limit` is the limit that determines whether two structures are same or not. :code:`volume_cut` and :code:`energy_cut` is the volume and energy criteria to calculate similarity distance between two structures (units are Å^3 and eV/atom, respectively). :code:`gaussian_dist` is the Gaussian distribution of the pRDF function (Å).
+This is the similarity metric that is used to measure the similarity distance between different structures. For :code:`type` of the similarity metric, :code:`pRDF` is only available for now (see J. Chem. Phys. 130, 104504 (2009) for details). :code:`limit` is the limit that determines whether two structures are same or not. :code:`volume_cut` and :code:`energy_cut` is the volume and energy criteria to calculate similarity distance between two structures (units are Å^3 and eV/atom, respectively). :code:`gaussian_dist` is the Gaussian distribution of the pRDF function (Å). :code:`rdf_grid` is the bin number of rdf.
 
 
 3.10 Relaxation option
