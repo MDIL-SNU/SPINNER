@@ -36,7 +36,7 @@ def choose_celltype(space_group):
     else:
         return 'cubic'
 
-def check_tolerance(latt0, coor0, tolerance_matrix, atomnumlist, change_coor, scale_factor, inp_file, longrange_yes, v, Vmin):
+def check_tolerance(latt0, coor0, tolerance_matrix, atomnumlist, change_coor, scale_factor, inp_file, longrange_yes, v, Vmin, number_output):
     
     tot_atom_num = len(coor0)
 
@@ -82,7 +82,10 @@ def check_tolerance(latt0, coor0, tolerance_matrix, atomnumlist, change_coor, sc
 
     #print (1)
     success = 1
-    # check the distance tolerance
+
+    mindis = 10000.0 
+
+   # check the distance tolerance
     if scale_factor != 0.0:
       for atom1 in range(tot_atom_num):
         for atom2 in range(atom1,tot_atom_num):
@@ -107,6 +110,8 @@ def check_tolerance(latt0, coor0, tolerance_matrix, atomnumlist, change_coor, sc
             if min(R) < tolerance_matrix[type1][type2]*scale_factor:
                 success = 0
 
+            if min(R) < mindis:
+                mindis = min(R) 
 
     # check the long range tolerance
     if inp_file['vacuum_constraint']['apply_vacuum_constraint'] == True and success !=0 and longrange_yes == 1:
@@ -187,4 +192,26 @@ def check_tolerance(latt0, coor0, tolerance_matrix, atomnumlist, change_coor, sc
 
     lattr = [lx,ly,lz,p_xy,p_xz,p_yz]
 
-    return success, lattr, coor
+    # print the mindis coor
+    atomtype = []
+    for i in range(len(atomnumlist)):
+        atomtype += [i+1]*atomnumlist[i]
+
+    with open("coo_result"+str(number_output),"w") as f:
+        f.write(" RDF lammps\n")
+        f.write("\n")
+        f.write(str(sum(atomnumlist))+" atoms\n")
+        f.write(str(len(atomnumlist))+" atom types\n")
+        f.write("\n")
+        f.write("0.000000 %10.6f xlo xhi\n"%(lx/mindis))
+        f.write("0.000000 %10.6f ylo yhi\n"%(ly/mindis))
+        f.write("0.000000 %10.6f zlo zhi\n"%(lz/mindis))
+        f.write("\n")
+        f.write("%10.6f %10.6f %10.6f  xy xz yz\n"%(p_xy/mindis, p_xz/mindis, p_yz/mindis))
+        f.write("\n")
+        f.write("Atoms\n")
+        f.write("\n")
+        for i in range(sum(atomnumlist)):
+            f.write(" %d %d  %10.6f %10.6f %10.6f\n"%(i+1, atomtype[i], coor[i][0]/mindis, coor[i][1]/mindis, coor[i][2]/mindis))
+
+    return success, lattr, coor, mindis

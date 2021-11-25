@@ -64,21 +64,24 @@ def core_job(gen, rank, pop, parent, struct_type,Vmin, inp_file, src_path, outpu
             coor = parent_data['coordinate']
             status = ""
         else:
-            E, V, latt, coor, rdf0, atom_e, status = run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accurate_potential,Vmin)
+            E, V, latt, coor, atom_e, status = run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accurate_potential,Vmin)
 
     else:
-        E, V, latt, coor, rdf0, atom_e, status = run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file,accurate_potential,Vmin)
+        E, V, latt, coor,  atom_e, status = run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file,accurate_potential,Vmin)
 
     t3 = time.time()
 
-    # write rdfs
+    # calculate rdfs
+    
+    write_contcar(coor, latt, atomnumlist, atomnamelist, tot_atom_num)
+ 
     if rerelax_best == False:
         if struct_type == 4 and gen > continue_+1:
             rdfs = parent_data['rdf']
         else:
-            rdfs = read_rdf_from_lammps(atomnumlist, inp_file, rdf0)
+            rdfs = calculate_rdf(inp_file, atomnamelist, atomnumlist)
     else: 
-        rdfs = read_rdf_from_lammps(atomnumlist, inp_file, rdf0)
+        rdfs = calculate_rdf(inp_file, atomnamelist, atomnumlist)
     t4 = time.time()
 
     # write POSCAR CONTCAR
@@ -125,6 +128,6 @@ def core_job(gen, rank, pop, parent, struct_type,Vmin, inp_file, src_path, outpu
 
     t5 = time.time()
 
-    del coor0, latt0, rdf0
+    del coor0, latt0
 
     return t2-t1, t3-t2, t4-t3, t5-t4, E, V, poscar, contcar, rdfs, latt, coor, atom_e, status, attempt

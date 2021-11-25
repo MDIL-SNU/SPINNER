@@ -1,0 +1,112 @@
+################ continue or not?: not continue if not written ###########
+continue:
+        continue_num:                   0     # 0: new calculation
+        original_dir:   directory_that_you_want_to_continue
+
+################# required #################
+
+input_dir:  input_dir
+output_dir: output
+
+initial_volume: 204.325
+
+structure:
+        i_population:    40
+        population:      40
+        num_of_best:      0
+        generation:      50
+        re-relax_best:  yes  #### change: re-relax best is more efficient when removing duplicated structures
+        population_max:  500
+
+material:
+        AA: 4
+        BB: 4
+        CC:  12
+
+
+############### iterative trainig ############
+sampling_trainingset:
+        maximum_iteration:              4
+        num_of_samples:                10
+
+DFT_setting:
+        potential_directory:    /home/kang1717/PBE54
+        vasp_gam:               /home/kang1717/vasp/vasp_gam
+        vasp_std:               /home/kang1717/vasp/vasp_std
+        vasp_ncl:               /home/kang1717/vasp/vasp_ncl
+        ENCUT:                  450 
+        k-spacing:              0.08 
+        NPAR:                   4
+        KPAR:                   1
+
+NNP_setting:
+        training_directory:     /data/kang1717/nn/csp_md/be1ge1o3/
+        input_file:             simplenn.yaml 
+        training_energy_limit:  0.02
+        training_force_limit:   0.3
+        training_stress_limit:  20.0
+
+
+############# Additional setting (not requied): default values when they are not written ##########
+            # recommend to carefully look into them
+operator:
+        random:              0.3
+        crossover:           0.5
+        con_permutation:     0.0
+        all_permutation:     0.1
+        latticemutation:     0.1
+
+distance_constraint:
+        AA-AA: 1.68
+        AA-BB: 2.0
+        AA-CC: 0.96
+        BB-BB: 2.32
+        BB-CC: 1.2
+        CC-CC: 1.92
+
+energy_criteria:
+        energy_cut_for_inheriting_structures:  0.20 
+        energy_cut_for_best_structures:        0.10 
+        energy_cut_for_further_relax:           0.5 
+
+similarity_metric:
+        type:             pRDF
+        limit:           0.020
+        volume_cut:        0.2 
+        energy_cut:      0.005 
+        gaussian_dist:    0.10
+        rdf_grid:          250 
+
+################### Not very important setting ########################
+crossover_condition:
+        num_of_grid_for_cut:                     10
+        energy_range_for_cut_select:          0.010
+        grid_for_shift:                           3
+        iteration_for_add_atoms:                 50
+
+random_condition:
+        force_general_Wyckoff_site:                          no
+        maximum_attempts_for_one_space_group_and_volume:    100
+        scale_factor:                                       1.0
+        sublattice_generation:                              0.0
+        max_sub_lattice:                                      2
+
+permutation_allow:    # need only when c_permutation is on. not used for a_permutation
+        group1: [AA,BB]
+        
+relax_condition:
+        relax_iteration:                              5 
+        method_of_first_relax:                       cg 
+        further_calculate_with_accurate_potential:   no 
+        stop_relax_beyond_this_generation:           10
+
+antiseed:
+        activate_antiseed:   no
+        gaussian_width:     0.2
+        selection_gaussian: 0.1
+        selection_fraction: 0.5
+
+vacuum_constraint:
+        apply_vacuum_constraint:                 no
+        maximum_vacuum_length:                 10.0
+        grid:                                   1.0

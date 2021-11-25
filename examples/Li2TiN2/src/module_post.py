@@ -75,7 +75,7 @@ def update_best_structures(global_best_results, results, inp_file, gen, pop_info
 
             Emin = info_sorted[0][1]
 
-            del info
+            del info,info_sorted
 
             for i in range(num_of_best_input):
                 tempi = info_sorted[i][0]

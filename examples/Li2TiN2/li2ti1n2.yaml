@@ -16,6 +16,7 @@ structure:
         num_of_best:      0
         generation:     500
         re-relax_best:  yes  #### change: re-relax best is more efficient when removing duplicated structures
+        population_max:  10000
 
 material:
         Li: 8
@@ -47,10 +48,10 @@ energy_criteria:
 
 similarity_metric:
         type:             pRDF
-        limit:            0.10 
-        volume_cut:        1.0  
-        energy_cut:      0.005  
-        gaussian_dist:     0.3 
+        limit:            0.01
+        volume_cut:      1000.0 
+        energy_cut:      1000.0  
+        gaussian_dist:     0.1
         rdf_grid:          250 
 
 ################### Not very important setting ########################
@@ -74,6 +75,7 @@ relax_condition:
         relax_iteration:                              5 
         method_of_first_relax:                       cg 
         further_calculate_with_accurate_potential:   no 
+        stop_relax_beyond_this_generation:          10
 
 antiseed:
         activate_antiseed:   no
@@ -83,6 +85,6 @@ antiseed:
 
 vacuum_constraint:
         apply_vacuum_constraint:                 no 
-        maximum_vacuum_length:                 10.0 
+        maximum_vacuum_length:                  6.0 
         grid:                                   1.0 
 

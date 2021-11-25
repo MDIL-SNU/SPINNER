@@ -86,6 +86,9 @@ def default_inputs(inp_yaml):
     if 're-relax_best' not in inp_yaml['structure']:
         inp_yaml['structure']['re-relax_best'] = True
 
+    if 'population_max' not in inp_yaml['structure']:
+        inp_yaml['structure']['population_max'] = 10000
+
     # energy_critetria:
     if 'energy_criteria' not in inp_yaml:
         inp_yaml['energy_criteria'] = {}
@@ -144,6 +147,8 @@ def default_inputs(inp_yaml):
         inp_yaml['relax_condition']['method_of_first_relax'] = 'cg'
     if 'further_calculate_with_accurate_potential' not in inp_yaml['relax_condition']:
         inp_yaml['relax_condition']['further_calculate_with_accurate_potential'] = False
+    if 'stop_relax_beyond_this_generation' not in inp_yaml['relax_condition']:
+        inp_yaml['relax_condition']['stop_relax_beyond_this_generation'] = False
 
     # distance constraint
     if 'distance_constraint' not in inp_yaml:
@@ -163,7 +168,7 @@ def default_inputs(inp_yaml):
         inp_yaml['vacuum_constraint']['apply_vacuum_constraint'] = True
 
     if 'maximum_vacuum_length' not in inp_yaml['vacuum_constraint']:
-        inp_yaml['vacuum_constraint']['maximum_vacuum_length'] = 10.0
+        inp_yaml['vacuum_constraint']['maximum_vacuum_length'] = 6.0
 
     if 'grid' not in inp_yaml['vacuum_constraint']:
         inp_yaml['vacuum_constraint']['grid'] = 1.0
@@ -176,16 +181,16 @@ def default_inputs(inp_yaml):
         inp_yaml['similarity_metric']['type'] = 'pRDF'
 
     if 'limit' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['limit'] = min(4.0/float(tot_atom_num),0.2)
+        inp_yaml['similarity_metric']['limit'] = 0.01
 
     if 'volume_cut' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['volume_cut'] = 0.1
+        inp_yaml['similarity_metric']['volume_cut'] = 1000.0
 
     if 'energy_cut' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['energy_cut'] = 0.005
+        inp_yaml['similarity_metric']['energy_cut'] = 1000.0
 
     if 'gaussian_dist' not in inp_yaml['similarity_metric']:
-        inp_yaml['similarity_metric']['gaussian_dist'] = 0.3
+        inp_yaml['similarity_metric']['gaussian_dist'] = 0.10
 
     if 'rdf_grid' not in inp_yaml['similarity_metric']:
         inp_yaml['similarity_metric']['rdf_grid'] = 250

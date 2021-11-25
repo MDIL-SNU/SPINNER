@@ -52,21 +52,27 @@ def relax_with_fixed_lattice(tot_atom_num,lmp,relax_method, relax_iter):
     if relax_method == 'fire':
         lmp.command("min_style fire")
         lmp.command("min_modify dmax 0.1")
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
     elif relax_method == 'quickmin':
         lmp.command("min_style quickmin")
         lmp.command("min_modify dmax 0.1")
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
     elif relax_method == 'cg':
         lmp.command('min_style cg')
         lmp.command("min_modify line quadratic dmax 0.1")
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
-        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
+        lmp.command("minimize 0 0.02 %d 10000"%(int(relax_iter*tot_atom_num/5)))
     elif relax_method == 'mix':
         lmp.command('min_style cg')
         lmp.command("min_modify line quadratic dmax 0.1")
@@ -170,66 +176,6 @@ def get_latt_coor(tot_atom_num,lmp):
     return latt,coor
     gc.collect()
 
-def calculate_rdf(atomnamelist, rdf_grid,lmp,number):
-    lmp.command("units           metal")
-    lmp.command("newton          on")
-    lmp.command("dimension       3")
-    lmp.command("boundary        p p p")
-    lmp.command("atom_style 	atomic ")
-    lmp.command("atom_modify     map yes")
-    lmp.command("box tilt large")
-    lmp.command("read_data coo_result{}  ".format(number))
-    lmp.command("pair_style nn   ")
-    sentence = "pair_coeff * *  potential10 "
-    for atom in atomnamelist:
-        sentence +=  atom + " "
-    lmp.command(sentence)
-    lmp.command("neighbor 2 bin")
-    lmp.command("neigh_modify 	every 1 delay 0 check yes one 50000 page 500000")
-    lmp.command("compute 	_rg all gyration ")               # All atoms will be involved in the simulation http://lammps.sandia.gov/doc/compute.html 
-    lmp.command("variable g equal cella")
-    lmp.command("variable h equal cellb")
-    lmp.command("variable y equal cellc")
-    g = lmp.extract_variable("g",0,0)
-    h = lmp.extract_variable("h",0,0)
-    y = lmp.extract_variable("y",0,0)
-    
-    if g<15.0:
-        r1 = math.ceil(15.0/g)
-    else:
-        r1 = 1
-
-    if h < 15.0:
-        r2 = math.ceil(15.0/h)
-    else:
-        r2 = 1
-    
-    if y < 15.0:
-        r3 = math.ceil(15.0/y)
-    else:
-        r3 = 1
-    
-    lmp.command("replicate "+str(r1)+" "+str(r2)+" "+str(r3))
-
-    for i in range(1,len(atomnamelist)+1):
-        for j in range(i,len(atomnamelist)+1):
-            sentence = 'compute myRDF{}{} all rdf {} {} {} cutoff 15.0'.format(i,j,int(3.0*rdf_grid),i,j)
-            lmp.command(sentence)
-            sentence = 'fix myRDF{}{}_ all ave/time 1 1 1 c_myRDF{}{}[*] mode vector'.format(i,j,i,j)
-            lmp.command(sentence)
-    lmp.command('run 1')
-
-    rdf = {}
-    
-    for i in range(1,len(atomnamelist)+1):
-        for j in range(i,len(atomnamelist)+1):
-            rdf[str(i)+str(j)] = []
-            for k in range(int(rdf_grid*3.0)):
-                rdf[str(i)+str(j)].append([lmp.extract_fix("myRDF"+str(i)+str(j)+"_",0,2,k,1),lmp.extract_fix("myRDF"+str(i)+str(j)+"_",0,2,k,1)])
-
-    return rdf
-    gc.collect()
-
 def atomic_energy(tot_atom_num,lmp):
     lmp.command("compute atompe all pe/atom")
     #lmp.command("dump mydump     all custom 1 atomic_energy id c_atompe")
@@ -244,7 +190,6 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
 
     tot_atom_num = inp_file['tot_atom_num']
     Ecut = inp_file['energy_criteria']['energy_cut_for_further_relax']
-    rdf_grid = inp_file['similarity_metric']['rdf_grid']
     relax_method = inp_file['relax_condition']['method_of_first_relax']
     relax_iter = inp_file['relax_condition']['relax_iteration']
 
@@ -260,15 +205,12 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
     lmp.command('write_data coo_result1')
     lmp.close()
     del lmp
-    success, latt, coor = check_tolerance(latt, coor, tolerance_matrix, atomnumlist, 0, 1.0, inp_file,0,v,Vmin) 
+    status = ""
+    success, latt, coor, mindis = check_tolerance(latt, coor, tolerance_matrix, atomnumlist, 0, 1.0, inp_file,0,v,Vmin,100) 
 
     if success == 0:
         status = "distance cut in the first relax"
         e = 10000.0
-        lmp = lammps()
-        rdf0 = calculate_rdf(atomnamelist, rdf_grid,lmp,1)
-        lmp.close()
-        del lmp
     elif e-Emin < Ecut*tot_atom_num:
         lmp = lammps()
         start_lammps(atomnamelist,lmp,1)
@@ -280,7 +222,7 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
         latt, coor = get_latt_coor(tot_atom_num,lmp)
         lmp.close()
 
-        del lmp
+
         if accurate_potential  == True:
             lmp = lammps()
             relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist)
@@ -289,17 +231,9 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
             latt, coor = get_latt_coor(tot_atom_num,lmp)
             lmp.close()
             del lmp
-            lmp = lammps()
-            rdf0 = calculate_rdf(atomnamelist, rdf_grid,lmp,3)
-            lmp.close()
-            del lmp
+            success, latt, coor, mindis = check_tolerance(latt, coor, tolerance_matrix, atomnumlist, 0, 1.0, inp_file,1,v,Vmin,5)  
         else:
-            lmp = lammps()
-            rdf0 = calculate_rdf(atomnamelist, rdf_grid,lmp,2)
-            lmp.close() 
-            del lmp
-        success, latt, coor = check_tolerance(latt, coor, tolerance_matrix, atomnumlist, 0, 1.0, inp_file,1,v,Vmin)  
-        status = ""
+            success, latt, coor, mindis = check_tolerance(latt, coor, tolerance_matrix, atomnumlist, 0, 1.0, inp_file,1,v,Vmin,4)  
         if success == 0:
             status = "distance cut in the second relax"
             e = 10000.0
@@ -308,11 +242,7 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
             e = 10000.0
     else:
         status = "not in the energy range in the first relax"
-        lmp = lammps()
-        rdf0 = calculate_rdf(atomnamelist, rdf_grid,lmp,1)
-        lmp.close()
-        del lmp
 
-    return e,v,latt,coor,rdf0,atom_e,status
+    return e,v,latt,coor,atom_e,status
     gc.collect()
 

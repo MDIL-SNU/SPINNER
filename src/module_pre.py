@@ -39,7 +39,7 @@ def make_potcar_cutoff_10(output_path):
                 f.write(fstr_separate[0])
                 f.write(" ")
                 f.write(fstr_separate[1])
-                f.write(" 15.0\n")
+                f.write(" 4.0\n")
             else:
                 f.write(fstr)
     del freadlines
@@ -326,3 +326,28 @@ def decide_crossover(struct_type, operators_num, results, inp_file,Emin,tot_atom
     del sumEN
     gc.collect()
     return mutationnum
+
+def make_poscars_contcars(atomnamelist,atomnumlist,coor,latt,gen,pop,tot_atom_num):
+    #write CONTCARs
+    contcar = "generation: "+str(gen)+" / population: "+str(pop)+"\n"
+    contcar += "1.000\n"
+    contcar += str(latt[0]) + " 0.0 0.0\n"
+    contcar += str(latt[3]) + " " + str(latt[1]) + " 0.0\n"
+    contcar += str(latt[4]) + " " + str(latt[5]) + " " + str(latt[2]) + "\n"
+
+    for j in range(len(atomnamelist)):
+        contcar += atomnamelist[j] + " "
+    contcar += "\n"
+    for j in range(len(atomnumlist)):
+        contcar += str(atomnumlist[j]) + " "
+    contcar += "\n"
+
+    contcar += "Cartesian\n"
+    for j in range(tot_atom_num):
+        contcar += str(coor[j][0])+" "
+        contcar += str(coor[j][1])+" "
+        contcar += str(coor[j][2])+" "
+        contcar += "\n"
+
+    poscar = contcar
+    return poscar, contcar

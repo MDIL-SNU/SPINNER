@@ -57,15 +57,28 @@ output_dir        = inp_file['output_dir']
 continue_         = inp_file['continue']['continue_num']
 dis_type          = inp_file['similarity_metric']['type']
 accurate_potential = inp_file['relax_condition']['further_calculate_with_accurate_potential']
+        
+original_dir         = inp_file['continue']['original_dir']
+original_path        = src_path+"/../"+original_dir
  
 output_path = src_path+'/../'+output_dir
+input_path  = src_path+'/../'+input_dir
 
 rdf_grid = inp_file['similarity_metric']['rdf_grid']
+
+# when quality monitoring
+if len(sys.argv) > 2:
+    number  = int(sys.argv[2])
+    step    = int(sys.argv[3])
+    generation = step*number
+    continue_  = step*(number-1)
+    original_path = output_path
+    original_dir = output_dir
 
 # check if the same-name directory is in the current folder
 
 if rank == 0:
-  if os.path.isdir(output_path):
+  if os.path.isdir(output_path) and continue_ == 0:
     with open("../ERROR_"+input_file,"w") as fw:
         fw.write("output_dir already exists in the current folder. rename it")
     for i in range(1,corenum):
@@ -79,19 +92,36 @@ else:
   if if_there_is_same_directory == 0:
     sys.exit()
 
+if rank == 0:
+  if os.path.isdir(input_path) == False:
+    with open("../ERROR_"+input_file,"w") as fw:
+        fw.write("input_dir does not exist")
+    for i in range(1,corenum):
+        comm.send(0, dest = i, tag = 0)
+    sys.exit()
+  else:
+    for i in range(1,corenum):
+        comm.send(1, dest = i, tag = 0)
+else:
+  if_there_is_same_directory = comm.recv(source = 0, tag=0)
+  if if_there_is_same_directory == 0:
+    sys.exit()
+
 #main core
 if rank == 0:    
-    #making folders    
-    os.mkdir(output_path)
+    #making folders  
+    if continue_ == 0 or (continue_ !=0 and output_path != original_path): 
+        os.mkdir(output_path)
     shutil.copy(src_path+'/../'+input_file,              output_path)
     with open(output_path+"/input.yaml","w") as f:
         yaml.dump(inp_file,f)
     shutil.copy(src_path+'/../'+input_dir+'/potential',  output_path)
     if accurate_potential == True:
         shutil.copy(src_path+'/../'+input_dir+'/potential_accurate',  output_path)
-    os.mkdir(output_path+"/random_structure")
-    with open(output_path+"/random_structure_log","w") as f:
-        f.write(" gen  pop      time    Attempt Spacegroup\n")    
+    if continue_ == 0 or (continue_ !=0 and output_path != original_path): 
+        os.mkdir(output_path+"/random_structure")
+        with open(output_path+"/random_structure_log","w") as f:
+            f.write(" gen  pop      time    Attempt Spacegroup\n")    
 
     make_potcar_cutoff_10(output_path)   
  
@@ -115,12 +145,13 @@ if rank == 0:
 
 
     #write start log
-    with open(output_path+'/totalGen','w') as f_individual:
-        f_individual.write("     Generation  Foldernum    Energy (eV)    Volume (A3)          Type          Parents    keptBest(generation,population)     \n")
-        f_individual.write("-------------------------------------------------------------------------------------------------------------------------------\n")
-    with open(output_path+'/totalbest','w') as f_best:
-        f_best.write("     Generation  Foldernum    Energy (eV)    Volume (A3)          Type          Parents    keptBest(generation,population)     \n")
-        f_best.write("-------------------------------------------------------------------------------------------------------------------------------\n")
+    if continue_ == 0 or (continue_ !=0 and output_path != original_path): 
+        with open(output_path+'/totalGen','w') as f_individual:
+            f_individual.write("     Generation  Foldernum    Energy (eV)    Volume (A3)          Type          Parents    keptBest(generation,population)     \n")
+            f_individual.write("-------------------------------------------------------------------------------------------------------------------------------\n")
+        with open(output_path+'/totalbest','w') as f_best:
+            f_best.write("     Generation  Foldernum    Energy (eV)    Volume (A3)          Type          Parents    keptBest(generation,population)     \n")
+            f_best.write("-------------------------------------------------------------------------------------------------------------------------------\n")
         
 
     # pre-processing if continue or not
@@ -166,8 +197,6 @@ if rank == 0:
         with open(output_path+"/specific_time","a") as f:
             f.write("                             Struct Lammps  RDF  Gets Commun Core#\n")
     else:
-        original_dir         = inp_file['continue']['original_dir']
-        original_path        = src_path+"/../"+original_dir
 
         num_of_atom = len(inp_file['material'])
         
@@ -181,7 +210,8 @@ if rank == 0:
         global_best_results = []
         global_best_results, Emin   = update_best_structures(global_best_results,oldresults,inp_file, continue_, pop_info)
 
-        rewrite_contcars_poscars(output_path, original_path, continue_, tot_atom_num)
+        if original_dir != output_dir:
+            rewrite_contcars_poscars(output_path, original_path, continue_, tot_atom_num)
 
         pop_num = len(oldresults['E'])
 
@@ -193,17 +223,24 @@ if rank == 0:
         ANTISEED = make_antiseed_continue(oldresults, global_best_results, inp_file, Emin)
 
         # write log
-        with open(src_path+"/../"+output_dir+"/timelog","w") as ftimelog:
-            ftimelog.write("-----------------------------------------------------------------------------\n")
-            ftimelog.write('Start from folder '+str(original_dir)+' and generation '+str(continue_)+'\n')
-            ftimelog.write("-----------------------------------------------------------------------------\n")
-            ftimelog.write("\n")
+        if original_dir != output_dir:
+            with open(src_path+"/../"+output_dir+"/timelog","w") as ftimelog:
+                ftimelog.write("-----------------------------------------------------------------------------\n")
+                ftimelog.write('Start from folder '+str(original_dir)+' and generation '+str(continue_)+'\n')
+                ftimelog.write("-----------------------------------------------------------------------------\n")
+                ftimelog.write("\n")
 
-        with open(output_path+"/specific_time","a") as f:
-            f.write("                             Struct Lammps  RDF  Gets Commun Core#\n")
+            with open(output_path+"/specific_time","a") as f:
+                f.write("                             Struct Lammps  RDF  Gets Commun Core#\n")
 
  
-        write_logs(continue_, output_path, original_path)
+            write_logs(continue_, output_path, original_path)
+        else:
+            with open(src_path+"/../"+output_dir+"/timelog","a") as ftimelog:
+                ftimelog.write("\n")
+                ftimelog.write("CONTINUE FROM HERE\n")
+                ftimelog.write("\n")
+
         results={}
         results['E'] = [0.0 for i in range(pop_num)]
         results['V'] = [0.0 for i in range(pop_num)]
@@ -262,12 +299,37 @@ for gen in range(startnum,generation+1):
         else:
             pop_num = population + num_of_best
 
+        if pop_num > inp_file['structure']['population_max'] and gen > startnum:
+            for process in range(1,corenum):
+                comm.send([-1, -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1], dest=process, tag=1)
+            with open(output_path+"/timelog","a") as ftimelog:
+                ftimelog.write("\n")
+                ftimelog.write("CALCULATION STOP DUE TO THE EXCEEDING OF MAXIMUM POPULATION NUMBER\n")
+                ftimelog.write("\n")
+            break
+
+
         with open(src_path+"/../"+output_dir+"/timelog","a") as ftimelog:
             ftimelog.write('Population: %d\n'%(pop_num))
             ftimelog.write('   Preprocessing + Local Optimization\n')
 
         Vmin, pop_info,random_num= get_pop_info(inp_file, gen, pop_num, oldresults, src_path, Emin, num_of_best, output_path, ANTISEED)    # pop_info: heredity, permutation, ancestor
 
+        if gen != startnum:
+            del results
+            results = {}
+            del poscars
+            del contcars
+        results['E'] = [0.0 for i in range(pop_num)]
+        results['V'] = [0.0 for i in range(pop_num)]
+        results['coordinate'] = [[[0.0,0.0,0.0] for i in range(tot_atom_num)] for k in range(pop_num)]
+        results['lattice']    = [[0.0 for i in range(6)] for k in range(pop_num)]
+        results['rdf']        = [[0.0 for i in range(int(rdf_grid*num_of_atom*(num_of_atom+1)/2))] for k in range(pop_num)]
+        results['atom_e']     = [[0.0 for i in range(tot_atom_num)] for k in range(pop_num)]
+        poscars  = ['' for i in range(pop_num)] 
+        contcars = ['' for i in range(pop_num)] 
+
+        received_processes = 1
 
 
         #main loop
@@ -290,6 +352,14 @@ for gen in range(startnum,generation+1):
         comm.send(Send, dest=corenum-1, tag=1)
         random_structure_done = 0
  
+   
+        T_struct = 0.0
+        T_lmp    = 0.0
+        T_rdf    = 0.0
+        T_get    = 0.0
+        T_commun = 0.0
+        Tmax     = [] 
+
 
         pop = 1
         process = 1
@@ -321,34 +391,43 @@ for gen in range(startnum,generation+1):
                         parent_data['atom_e']     = [oldresults['atom_e'][parent[0]-1],    oldresults['atom_e'][parent[1]-1]]
 
             t_start = time.time()
-            Send                = [gen,Emin, t_start, pop, parent, struct_type, Vmin, parent_data,t_start-t_pre,average_atom_e, startnum, 1]
-            comm.send(Send, dest=process, tag=1)
+
+            #check if the structure have existed during certain generations
+            if struct_type == 4:
+                previous_num = pop_info['kept_best_num'][pop-1]
+                origin_gen   = history[gen-1][previous_num-1][5]
+            else:
+                origin_gen = gen
+
+            if gen > startnum + inp_file['relax_condition']['stop_relax_beyond_this_generation']  and gen - origin_gen > inp_file['relax_condition']['stop_relax_beyond_this_generation']:
+
+                results['lattice'][pop-1] = oldresults['lattice'][previous_num-1]
+                results['coordinate'][pop-1] = oldresults['coordinate'][previous_num-1]
+                results['rdf'][pop-1] = oldresults['rdf'][previous_num-1]
+                results['E'][pop-1] = oldresults['E'][previous_num-1]
+                results['V'][pop-1] = oldresults['V'][previous_num-1]
+                results['atom_e'][pop-1] = oldresults['atom_e'][previous_num-1]
+                received_processes += 1
+
+                t_struct = 0.0 
+                t_lmp = 0.0
+                t_rdf = 0.0
+                t_get = 0.0
+                status  = 'last'
+                t_commun = time.time() - t_start
+                T_commun += t_commun
+                coor = results['coordinate'][pop-1]
+                latt = results['lattice'][pop-1]
+                with open(output_path+"/specific_time","a") as f:
+                    f.write("generation %d / population %d : %.2f   %.2f  %.2f   %.2f   %.2f  0   %s\n"%(gen,pop,t_struct,t_lmp,t_rdf,t_get,t_commun,status)) 
+                poscar, contcar = make_poscars_contcars(atomnamelist,atomnumlist,coor,latt,gen,pop,tot_atom_num) ################## do this
+                poscars[pop-1] = poscar
+                contcars[pop-1]= contcar
+            else:
+                Send                = [gen,Emin, t_start, pop, parent, struct_type, Vmin, parent_data,t_start-t_pre,average_atom_e, startnum, 1]
+                comm.send(Send, dest=process, tag=1)
+                process += 1
             pop += 1
-            process += 1
-
-   
-        T_struct = 0.0
-        T_lmp    = 0.0
-        T_rdf    = 0.0
-        T_get    = 0.0
-        T_commun = 0.0
-        Tmax     = [] 
-        
-        if gen != startnum:
-            del results
-            results = {}
-            del poscars
-            del contcars
-        results['E'] = [0.0 for i in range(pop_num)]
-        results['V'] = [0.0 for i in range(pop_num)]
-        results['coordinate'] = [[[0.0,0.0,0.0] for i in range(tot_atom_num)] for k in range(pop_num)]
-        results['lattice']    = [[0.0 for i in range(6)] for k in range(pop_num)]
-        results['rdf']        = [[0.0 for i in range(int(rdf_grid*num_of_atom*(num_of_atom+1)/2))] for k in range(pop_num)]
-        results['atom_e']     = [[0.0 for i in range(tot_atom_num)] for k in range(pop_num)]
-        poscars  = ['' for i in range(pop_num)] 
-        contcars = ['' for i in range(pop_num)] 
-
-        received_processes = 1
 
         while received_processes < pop_num+1:
             [t_start, process, rpop, t_struct, t_lmp, t_rdf, t_get, rE, rV, poscar, contcar, rdfs, latt, coor, atom_e, status, job] = comm.recv(source=MPI.ANY_SOURCE, tag=2)
@@ -388,36 +467,74 @@ for gen in range(startnum,generation+1):
                 del t_start,rpop, t_struct, t_lmp, t_rdf, t_get, rE, rV, poscar, contcar, rdfs, latt, coor, atom_e, status
 
             if pop < pop_num+1:
-                struct_type, parent = get_parent(pop_info,pop)
-                t_pre = time.time()
-                parent_data = {}
+                check = 0
+                while check == 0 and pop < pop_num+1:
+                    struct_type, parent = get_parent(pop_info,pop)
+                    t_pre = time.time()
+                    parent_data = {} 
+
+                    if struct_type == 4:
+                        previous_num = pop_info['kept_best_num'][pop-1]
+                        origin_gen   = history[gen-1][previous_num-1][5]
+                    else:
+                        origin_gen = gen
+
+                    if gen > startnum + inp_file['relax_condition']['stop_relax_beyond_this_generation']  and gen - origin_gen > inp_file['relax_condition']['stop_relax_beyond_this_generation']:
+                        t_start = time.time()
+                        results['lattice'][pop-1] = oldresults['lattice'][previous_num-1]
+                        results['coordinate'][pop-1] = oldresults['coordinate'][previous_num-1]
+                        results['rdf'][pop-1] = oldresults['rdf'][previous_num-1]
+                        results['E'][pop-1] = oldresults['E'][previous_num-1]
+                        results['V'][pop-1] = oldresults['V'][previous_num-1]
+                        results['atom_e'][pop-1] = oldresults['atom_e'][previous_num-1]
+
+                        t_struct = 0.0 
+                        t_lmp = 0.0
+                        t_rdf = 0.0
+                        t_get = 0.0
+                        status  = 'last'
+                        t_commun = time.time() - t_start
+                        T_commun += t_commun
+                        coor = results['coordinate'][pop-1]
+                        latt = results['lattice'][pop-1]
+                        with open(output_path+"/specific_time","a") as f:
+                            f.write("generation %d / population %d : %.2f   %.2f  %.2f   %.2f   %.2f  0   %s\n"%(gen,pop,t_struct,t_lmp,t_rdf,t_get,t_commun,status)) 
+                        poscar, contcar = make_poscars_contcars(atomnamelist,atomnumlist,coor,latt,gen,pop,tot_atom_num) ################## do this
+                        poscars[pop-1] = poscar
+                        contcars[pop-1]= contcar
+                        received_processes += 1
+                        pop += 1
+
             
-                if gen == startnum and struct_type == 0:
-                  parent_data['coordinate'] = initial_randoms[pop][0]
-                  parent_data['lattice']    = initial_randoms[pop][1]
+                    else:
+                   
+                      if  gen == startnum and struct_type == 0:
+                        parent_data['coordinate'] = initial_randoms[pop][0]
+                        parent_data['lattice']    = initial_randoms[pop][1]
+    
+                      else:
+                        if type(parent) == int:
+                          if parent != 0:
+                              parent_data['lattice']    = oldresults['lattice'][parent-1]
+                              parent_data['coordinate'] = oldresults['coordinate'][parent-1]
+                              parent_data['rdf']        = oldresults['rdf'][parent-1]
+                              parent_data['E']          = oldresults['E'][parent-1]
+                              parent_data['V']          = oldresults['V'][parent-1]
+                              parent_data['atom_e']     = oldresults['atom_e'][parent-1]
+                        else:
+                          parent_data['lattice']    = [oldresults['lattice'][parent[0]-1],   oldresults['lattice'][parent[1]-1]]
+                          parent_data['coordinate'] = [oldresults['coordinate'][parent[0]-1],oldresults['coordinate'][parent[1]-1]]
+                          parent_data['rdf']        = [oldresults['rdf'][parent[0]-1],       oldresults['rdf'][parent[1]-1]]
+                          parent_data['E']          = [oldresults['E'][parent[0]-1],         oldresults['E'][parent[1]-1]]
+                          parent_data['V']          = [oldresults['V'][parent[0]-1],         oldresults['V'][parent[1]-1]]
+                          parent_data['atom_e']     = [oldresults['atom_e'][parent[0]-1],    oldresults['atom_e'][parent[1]-1]]
 
-                else:
-                  if type(parent) == int:
-                      if parent != 0:
-                          parent_data['lattice']    = oldresults['lattice'][parent-1]
-                          parent_data['coordinate'] = oldresults['coordinate'][parent-1]
-                          parent_data['rdf']        = oldresults['rdf'][parent-1]
-                          parent_data['E']          = oldresults['E'][parent-1]
-                          parent_data['V']          = oldresults['V'][parent-1]
-                          parent_data['atom_e']     = oldresults['atom_e'][parent-1]
-                  else:
-                    parent_data['lattice']    = [oldresults['lattice'][parent[0]-1],   oldresults['lattice'][parent[1]-1]]
-                    parent_data['coordinate'] = [oldresults['coordinate'][parent[0]-1],oldresults['coordinate'][parent[1]-1]]
-                    parent_data['rdf']        = [oldresults['rdf'][parent[0]-1],       oldresults['rdf'][parent[1]-1]]
-                    parent_data['E']          = [oldresults['E'][parent[0]-1],         oldresults['E'][parent[1]-1]]
-                    parent_data['V']          = [oldresults['V'][parent[0]-1],         oldresults['V'][parent[1]-1]]
-                    parent_data['atom_e']     = [oldresults['atom_e'][parent[0]-1],    oldresults['atom_e'][parent[1]-1]]
-
-                t_start = time.time()
-                Send                      = [gen, Emin, t_start, pop, parent, struct_type, Vmin, parent_data,  t_start-t_pre, average_atom_e, startnum, 1]
-                comm.send(Send, dest=process, tag=1)
-                pop += 1
-                del parent_data, Send
+                      t_start = time.time()
+                      Send                      = [gen, Emin, t_start, pop, parent, struct_type, Vmin, parent_data,  t_start-t_pre, average_atom_e, startnum, 1]
+                      comm.send(Send, dest=process, tag=1)
+                      del parent_data, Send
+                      pop += 1
+                      check = 1
 
         if random_structure_done == 0: 
             [T_struct_random, process, rpop, t_struct, t_lmp, t_rdf, t_get, rE, rV, poscar, contcar, rdfs, latt, coor, atom_e, status, job] = comm.recv(source=corenum-1, tag=2)
