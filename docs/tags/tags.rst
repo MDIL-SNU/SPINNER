@@ -166,8 +166,9 @@ This is the similarity metric that is used to measure the similarity distance be
       relax_iteration:                              5
       method_of_first_relax:                       cg
       further_calculation_with_accurate_potential: no
+      stop_relax_beyond_this_generation:           10
 
-Relaxation is performed by :code:`relax_iteration` × total number of atoms  × 3 iterations for both lattice-fix relaxation and lattice-free relaxation. :code:`method_of_first_relax` is the method for the lattice-fix relaxation (cg/fire/mix is possible while :code:`mix` is mixing of fire and cg). :code:`further_calculation_with_accurate_potential` decides whether to further evaluate energy with more accurate potential (when using this tag, potential_accurate file should be provided in the input directory). 
+Relaxation is performed by :code:`relax_iteration` × total number of atoms  × 3 iterations for both lattice-fix relaxation and lattice-free relaxation. :code:`method_of_first_relax` is the method for the lattice-fix relaxation (cg/fire/mix is possible while :code:`mix` is mixing of fire and cg). :code:`further_calculation_with_accurate_potential` decides whether to further evaluate energy with more accurate potential (when using this tag, potential_accurate file should be provided in the input directory). Relaxation of a structure stops after :code:`stop_relax_beyond_this_generation` generations.
 
 
 3.11 Vacuum constraint
@@ -177,7 +178,7 @@ Relaxation is performed by :code:`relax_iteration` × total number of atoms  × 
 
   Vacuum_constraint:
       apply_vacuum_constraint:   yes
-      maximum_vacuum_length:    10.0
+      maximum_vacuum_length:     6.0
       grid:                      1.0
 
 SPINNER excludes structures having large vacuum when :code:`apply_vacuum_constraint` is on. :code:`maximum_vacuum_length` is the maximum vacuum length allowed. :code:`grid` is the grid length used in the algorithm (Å).
@@ -204,5 +205,5 @@ SPINNER switches on antiseed option when :code:`activation_antiseed` is set to :
       ogirinal_dir:    [original directory]
       continue_num:    100
 
-:code:`original_dir` is the directory that one wants to start the calculation. :code:`continue_num` is the starting generation. New calculation results are written in :code:`output_dir`.
+:code:`original_dir` is the directory that one wants to start the calculation. :code:`continue_num` is the starting generation. New calculation results are written in :code:`output_dir`. :code:`original_dir` and :code:`output_dir` can be same.
 
