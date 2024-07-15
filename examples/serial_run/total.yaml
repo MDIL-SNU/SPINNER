@@ -19,7 +19,7 @@ maximum_pop: 60            # maximum population in iterative csp step
 
 output_dir:
   ab_initio_mqa: ab_initio_mqa
-  initial_NNP_training: beginning_nnp_training
+  initial_nnp_training: beginning_nnp_training
   csp_iteration: csp_iteration
   nnp_retraining: evolving_NNP
   final_csp: final_csp
