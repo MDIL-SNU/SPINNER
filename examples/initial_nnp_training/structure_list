@@ -1,0 +1,6 @@
+[Melting]
+/PATH_OF_ab_initio_mqa/melt/OUTCAR ::5
+[Quenching]
+/PATH_OF_ab_initio_mqa/quench/OUTCAR ::5
+[Annealing]
+/PATH_OF_ab_initio_mqa/anneal/OUTCAR ::5

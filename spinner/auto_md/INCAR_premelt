@@ -1,0 +1,39 @@
+   SYSTEM = example
+ Starting parameters for this run:
+   NWRITE =      1    write-flag
+   ISTART =      0    job   : 0-new, 1-cont, 2-samecut
+   ICHARG =      2    charge: 0-wave, 1-file, 2-atom, >10-const
+   INIWAV =      1    electr: 0-lowe 1-rand  2-diag
+
+ Electronic Relaxation:
+#   ENCUT = 500
+   PREC   = low      normal | accurate
+   ADDGRID = .F.
+
+   NELM = 100
+#   EDIFF  =  1E-06    energy stopping-criterion for ELM
+   LREAL  =  AUTO      real-space projection (.FALSE., .TRUE., On, Auto)
+   ALGO   =  N     Normal, Fast, Very_Fast
+   LWAVE  = .F.
+   LCHARG = .F.
+
+ Ionic Relaxation:
+   NSW    = 1500   max number of geometry steps
+   IBRION =    0    ionic relax: 0-MD, 1-quasi-Newton, 2-CG, 3-Damped MD
+   ISIF   =    2
+   ISYM   =    0     (1-use symmetry, 0-no symmetry)
+   POTIM  =    3   initial time step for geo-opt (increase for soft sys)
+   TEBEG  = 4500
+   TEEND  = 4500
+   SMASS  = 0
+   MDALGO = 2
+
+ DOS related values:
+   ISMEAR =     0     (-1-Fermi, 1-Methfessel/Paxton)
+   SIGMA  =     0.2   broadening in eV
+   LORBIT = 11
+
+
+
+   NPAR = 4
+#   KPAR = 2

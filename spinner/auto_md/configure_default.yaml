@@ -1,0 +1,55 @@
+Actions:
+  premelt: True
+  convergence_test: True
+  relax_md: True
+  find_Tm: True
+  melt: True
+  quench: True
+  anneal: True
+  prdf: False
+
+pot_dir: /data/vasp4us/pot/PBE54
+composition: Ba10Ge10
+vasp_config:
+  std: /data/mk01071/vasp_compile/odin/vasp.6.2.0/bin/vasp_std
+  gam: /data/mk01071/vasp_compile/odin/vasp.6.2.0/bin/vasp_gam
+  npar: 4
+  mpicommand: mpirun
+target_num: 64
+preset: SPINNER
+
+premelt_config:
+  steps: 1500
+  stepsize: 3 #0.75 for H
+    
+conv_test_config:
+  kp_use: AUTO #AUTO, G, B
+  cutoff_use: AUTO #AUTO, 300
+  cutoff_stepsize: 50
+  reference_KP: "3 3 3"
+  reference_cutoff: "550"
+  E_tol: 20 #meV/atom
+  F_tol: 0.4 #eV/A
+  S_tol: 20 #kB
+
+find_Tm_config:
+  Start_T: 3400
+  End_T: 1000
+  StepSize_T: 800
+  duration: 1000
+  maximum_post_rlx: 5
+
+melt_config:
+  steps: 4000
+  Temp: AUTO # or 3000
+
+
+quench_config:
+  quenching_rate: 200 #K/ps
+  Temp_start: AUTO
+  Temp_end: 300
+
+annealing_config:
+  steps: 2000
+  Temp_start: 500
+  Temp_end: 500

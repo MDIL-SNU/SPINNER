@@ -1,0 +1,15 @@
+Actions:
+  premelt: True
+  convergence_test: True
+  find_Tm: True
+  melt: True
+  quench: True
+  anneal: True
+
+pot_path: /VASP_POTCAR_DIR/PBE54
+composition: Na1Cl1
+vasp_config:
+  std: /VASP_STANDARD_BINARY_PATH
+  gam: /VASP_GAMMA_BINARY_PATH
+  npar: 4
+  mpicommand: mpirun

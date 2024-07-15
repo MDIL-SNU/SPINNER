@@ -1,0 +1,35 @@
+continue:
+  continue_num: 0
+  original_dir: output_fin
+distance_constraint:
+  Cl-Cl: 2.895
+  Na-Cl: 2.195
+  Na-Na: 2.525
+energy_criteria:
+  energy_cut_for_best_structures: 0.05
+  energy_cut_for_further_relax: 0.5
+  energy_cut_for_inheriting_structures: 0.1
+initial_volume: 197.21925178130724
+input_dir: input_potential
+lammps_simd: true
+material:
+  Cl: 4
+  Na: 4
+operator:
+  all_permutation: 0.2
+  crossover: 0.0
+  latticemutation: 0.1
+  random: 0.7
+output_dir: final_csp
+relax_condition:
+  stop_relax_beyond_this_generation: 10
+similarity_metric:
+  energy_cut: 0.005
+structure:
+  generation: 200
+  i_population: 300
+  population: 300
+  population_max: 10000
+  re-relax_best: true
+vacuum_constraint:
+  maximum_vacuum_length: 7.0

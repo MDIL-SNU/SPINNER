@@ -1,0 +1,64 @@
+generate_features:  True
+preprocess:         True
+train_model:    True
+
+params:
+    Na: params_bi
+    Cl: params_bi
+
+data: 
+    type:               'symmetry_function'
+    compress_outcar:    True
+
+
+preprocessing: 
+    valid_rate:             0.1
+    shuffle:                True
+    calc_scale:             True
+    scale_type:             'minmax'
+    scale_width:            1.0
+    calc_pca:               True
+    pca_whiten:             True
+    min_whiten_level:       1.0e-8
+
+neural_network:
+    train:              True
+    test:               False
+    add_NNP_ref:        False
+    continue:           False
+    clear_prev_status:      False
+    clear_prev_optimizer:   False
+    start_epoch:            1
+
+    use_force:          True
+    use_stress:         True
+    shuffle_dataloader: True
+    nodes:              '30-30'
+    acti_func:          'tanh'
+    double_precision:   True
+    weight_initializer:
+        type:           'he normal'
+    dropout:            0.0
+    use_scale:          True
+    use_pca:            True
+    optimizer:
+        method:         'Adam'
+    batch_size:         20
+    full_batch:         False
+    total_epoch:        1000
+    show_interval:      1
+    save_interval:      5
+    learning_rate:      0.0001
+    decay_rate:         null
+    l2_regularization:  1.0e-8
+    E_loss_type:        1
+    F_loss_type:        1
+    energy_coeff:       1.
+    force_coeff:        0.1 
+    stress_coeff:       1.0e-6
+    print_structure_rmse:   True
+    use_gpu:            True
+    GPU_number:         null
+    inter_op_threads:   0
+    intra_op_threads:   0
+    subprocesses:       0 
