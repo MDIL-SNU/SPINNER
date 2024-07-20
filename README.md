@@ -77,7 +77,7 @@ to bind randSpg with python, do
   cd /SPINNER-directory/randSpg-vspinner/python
   mkdir build
   cd build
-  cmake .. -D Pybind11=/VIRTUAL_ENV_DIR/lib/python3.9/site-packeges/pybind11/share/cmake/pybind11/ 
+  cmake .. -D pybind11_DIR=/VIRTUAL_ENV_DIR/lib/python3.9/site-packeges/pybind11/share/cmake/pybind11/ 
   make –j3
   cp pyrandspg.cpython* /directory-where-your-python-is/lib/python3/site-packages/
 ```
@@ -138,14 +138,22 @@ find the below line and add "-xAVX" tag in the cmake/preset/my_opeapi.cmake
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -xAVX" CACHE STRING "" FORCE)
 ```
 
+add the bellow line in the cmake/preset/my_opeapi.cmake
+
+```
+set(ENV{VIRTUAL_ENV} "/VIRTUAL_ENV_DIR/")
+# ex. set(ENV{VIRTUAL_ENV} "~/.conda/envs/SPINNER/")
+```
+
 ```
   mkdir build
   cd build
   cmake -D PKG_PYTHON=yes -D PKG_EXTRA-COMPUTE=yes -D PKG_INTEL=yes -D BUILD_MPI=no \
-  -D LAMMPS_MACHINE=simd_serial  -D INTEL_ARCH=cpu -D BUILD_SHARED_LIBS=yes  \
-  -D  CMAKE_BUILD_TYPE=Release  -C ../cmake/presets/nolib.cmake  -C ../cmake/presets/my_oneapi.cmake \
-  ../cmake/
+  -D LAMMPS_MACHINE=simd_serial -D INTEL_ARCH=cpu -D BUILD_SHARED_LIBS=yes  \
+  -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/VIRTUAL_ENV_DIR/ \
+  -C ../cmake/presets/nolib.cmake  -C ../cmake/presets/my_oneapi.cmake ../cmake/
   cmake --build . --target install
+  cmake --build . --target install-python
 ```
 
 To check whether LAMMPS install in python, run the following code in python.

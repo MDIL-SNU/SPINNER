@@ -6,7 +6,7 @@ import spinner.csp.module_spacegroup
 from spinner.csp.module_spacegroup import *
 import gc
 
-def start_lammps(atomnamelist,lmp,number): 
+def start_lammps(atomnamelist,lmp,number,inp_file): 
     lmp.command("units           metal")
     lmp.command("newton          on")
     lmp.command("dimension       3")
@@ -18,7 +18,10 @@ def start_lammps(atomnamelist,lmp,number):
         lmp.command("read_data coo  ")
     else:
         lmp.command("read_data coo_result{}  ".format(number))
-    lmp.command("pair_style nn/intel   ")
+    if 'lammps_simd' in inp_file.keys() and inp_file['lammps_simd'] == True:
+        lmp.command("pair_style nn/intel   ")
+    else:
+        lmp.command("pair_style nn   ")
     sentence = "pair_coeff * *  potential "
     for atom in atomnamelist:
         sentence +=  atom + " "
@@ -40,7 +43,7 @@ def fix_holdem(atomnumlist, tolerance_matrix,lmp):
 
     number = 0
     for i in range(len(atomnum_array)):
-        for j in range(i,len(atomnum_array)):
+        for j in range(i+1,len(atomnum_array)):
             number += 1
             sentence = "fix holdem"+ str(number) + " all restrain lbound " + str(i+1) + "  " + str(j+1) + " 100.0 100.0 " + str(tolerance_matrix[int(atomnum_array[i])][int(atomnum_array[j])])
             lmp.command(sentence) 
@@ -91,7 +94,7 @@ def relax_with_unfixed_lattice(tot_atom_num,lmp, relax_iter):
     lmp.command('write_data coo_result2')
     gc.collect()
 
-def relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist):
+def relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist,inp_file):
     lmp.command("units           metal")
     lmp.command("newton          on")
     lmp.command("dimension       3")
@@ -100,7 +103,10 @@ def relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist):
     lmp.command("atom_modify     map yes")
     lmp.command("box tilt large")
     lmp.command("read_data coo_result2  ")
-    lmp.command("pair_style nn/intel   ")
+    if 'lammps_simd' in inp_file.keys() and inp_file['lammps_simd'] == True:
+        lmp.command("pair_style nn/intel   ")
+    else:
+        lmp.command("pair_style nn   ")
     sentence = "pair_coeff * *  potential_accurate "
     for atom in atomnamelist:
         sentence +=  atom + " "
@@ -123,7 +129,7 @@ def unfixholdem(atomnumlist,lmp):
         atomnum_array += [i]*atomnumlist[i]
     number = 0
     for i in range(len(atomnum_array)):
-        for j in range(i,len(atomnum_array)):
+        for j in range(i+1,len(atomnum_array)):
             number += 1
             lmp.command("unfix holdem"+str(number))
     del atomnum_array
@@ -201,7 +207,7 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
         except:
             print("Check whether normal version LAMMPS are installed")
             print("If you intend to run with SIMD version, please make [lammps_simd: True] in yaml file")
-    start_lammps(atomnamelist,lmp,0)
+    start_lammps(atomnamelist,lmp,0,inp_file)
     fix_holdem(atomnumlist, tolerance_matrix,lmp)
     relax_with_fixed_lattice(tot_atom_num,lmp,relax_method, relax_iter)
     unfixholdem(atomnumlist,lmp)
@@ -220,7 +226,7 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
         e = 10000.0
     elif e-Emin < Ecut*tot_atom_num:
         lmp = lammps('simd_serial')
-        start_lammps(atomnamelist,lmp,1)
+        start_lammps(atomnamelist,lmp,1,inp_file)
         fix_holdem(atomnumlist, tolerance_matrix,lmp)
         relax_with_unfixed_lattice(tot_atom_num,lmp, relax_iter)
         atom_e = atomic_energy(tot_atom_num, lmp)
@@ -232,7 +238,7 @@ def run_lammps(Emin, tolerance_matrix, atomnamelist, atomnumlist, inp_file, accu
 
         if accurate_potential  == True:
             lmp = lammps('simd_serial')
-            relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist)
+            relax_with_accurate_potential(tot_atom_num,lmp,atomnamelist,inp_file)
             atom_e = atomic_energy(tot_atom_num, lmp)
             e,v = evaluation_E(lmp) # include unfix holdem
             latt, coor = get_latt_coor(tot_atom_num,lmp)
