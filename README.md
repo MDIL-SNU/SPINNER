@@ -90,6 +90,8 @@ We lastly tested on 2Aug2023 version.
 
 ```
   git clone -b stable https://github.com/lammps/lammps.git lammps-spinner
+  cd lammps-spinner
+  git checkout patch_2Aug2023
 ```
 
 SPINNER provide two version of LAMMPS, Normal and SIMD. Install process is different for each version. Check your machine and follow the install process that match with your machine.
@@ -124,7 +126,6 @@ If your machine support SIMD, we recommend to use SIMD version. It speeds up aro
 
 ```
   cp /SPINNER-directory/spinner/simple_nn/features/symmetry_function/SIMD/pair_nn_simd.* /LAMMPS-directory/src/
-  cp /SPINNER-directory/spinner/simple_nn/features/symmetry_function/symmetry_function.h /LAMMPS-directory/src/
 ```
 
 ```
